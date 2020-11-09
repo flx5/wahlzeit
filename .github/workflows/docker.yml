@@ -5,6 +5,7 @@ on:
     # Publish `adap-cw*` tags as releases.
     tags:
         - adap-cw*
+        - adap-hw*
 
 env:
   IMAGE_NAME: wahlzeit

@@ -1,5 +1,7 @@
 package org.wahlzeit.model;
 
+import org.wahlzeit.utils.PrecisionUtil;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Objects;
@@ -53,9 +55,9 @@ public class Coordinate {
             return false;
         }
 
-        return this.x == other.x
-                && this.y == other.y
-                && this.z == other.z;
+        return PrecisionUtil.equals(this.x, other.x)
+                && PrecisionUtil.equals(this.y, other.y)
+                && PrecisionUtil.equals(this.z, other.z);
     }
 
     public double getX() {

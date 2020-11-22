@@ -2,7 +2,7 @@ package org.wahlzeit.utils;
 
 public class PrecisionUtil {
 
-    public static final double EPSILON = 0.1;
+    public static final double EPSILON = 0.0001;
 
     public static boolean equals(double x, double y) {
         return equals(x,y, EPSILON);

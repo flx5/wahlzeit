@@ -23,4 +23,8 @@ public class Location {
             this.coordinate.writeOn(rset);
         }
     }
+
+    public Coordinate getCoordinate() {
+        return coordinate;
+    }
 }

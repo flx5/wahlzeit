@@ -17,7 +17,7 @@ public class CoordinateTest {
         when(rs.getDouble("location_y")).thenReturn(5.0);
         when(rs.getDouble("location_z")).thenReturn(3.0);
 
-        Coordinate coordinate = new Coordinate(rs);
+        CartesianCoordinate coordinate = new CartesianCoordinate(rs);
 
         assertEquals(2.0, coordinate.getX(), 0.0);
         assertEquals(5.0, coordinate.getY(), 0.0);
@@ -29,7 +29,7 @@ public class CoordinateTest {
         ResultSet rs = mock(ResultSet.class);
 
 
-        Coordinate coordinate = new Coordinate(2.3, 1.4, 4.2);
+        CartesianCoordinate coordinate = new CartesianCoordinate(2.3, 1.4, 4.2);
 
         coordinate.writeOn(rs);
 
@@ -40,12 +40,12 @@ public class CoordinateTest {
 
     @Test
     public void testEquality() {
-        Coordinate x = new Coordinate(2.3, 1.4, 4.2);
+        CartesianCoordinate x = new CartesianCoordinate(2.3, 1.4, 4.2);
 
         double myEpsilon = PrecisionUtil.EPSILON / 2;
 
-        Coordinate y = new Coordinate(2.3+myEpsilon, 1.4-myEpsilon, 4.2);
-        Coordinate z = new Coordinate(2.3+myEpsilon, 1.4-myEpsilon, 4.5);
+        Coordinate y = new CartesianCoordinate(2.3+myEpsilon, 1.4-myEpsilon, 4.2);
+        Coordinate z = new CartesianCoordinate(2.3+myEpsilon, 1.4-myEpsilon, 4.5);
 
         assertTrue(x.equals(y));
         assertFalse(x.equals(z));
@@ -53,9 +53,27 @@ public class CoordinateTest {
 
     @Test
     public void testDistance() {
-        Coordinate x = new Coordinate(13, 8, 7);
-        Coordinate y = new Coordinate(7, 6, 10);
+        CartesianCoordinate x = new CartesianCoordinate(13, 8, 7);
+        CartesianCoordinate y = new CartesianCoordinate(7, 6, 10);
 
         assertEquals(7.0, x.getDistance(y), PrecisionUtil.EPSILON);
+    }
+
+    @Test
+    public void testSphericCartesianConversion() {
+        CartesianCoordinate coordinate = new CartesianCoordinate(13, 8, 7);
+        SphericCoordinate expected = new SphericCoordinate(0.55165, 1.1408, 16.7929);
+
+        SphericCoordinate result = coordinate.asSphericCoordinate();
+        assertEquals(expected, result);
+    }
+
+    @Test
+    public void testCartesianSphericConversion() {
+        CartesianCoordinate expected = new CartesianCoordinate(13, 8, 7);
+        SphericCoordinate coordinate = new SphericCoordinate(0.551655, 1.14083, 16.7929);
+
+        CartesianCoordinate result = coordinate.asCartesianCoordinate();
+        assertEquals(expected, result);
     }
 }

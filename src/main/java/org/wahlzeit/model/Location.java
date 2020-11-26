@@ -15,12 +15,12 @@ public class Location {
     }
 
     public void readFrom(ResultSet rset) throws SQLException {
-        this.coordinate = new Coordinate(rset);
+        this.coordinate = new CartesianCoordinate(rset);
     }
 
     public void writeOn(ResultSet rset) throws SQLException {
         if(this.coordinate != null) {
-            this.coordinate.writeOn(rset);
+            this.coordinate.asCartesianCoordinate().writeOn(rset);
         }
     }
 

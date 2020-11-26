@@ -18,7 +18,7 @@ public class LocationTest {
         when(rs.getDouble("location_z")).thenReturn(3.0);
 
         Location location = new Location(rs);
-        Coordinate coordinate = location.getCoordinate();
+        CartesianCoordinate coordinate = location.getCoordinate().asCartesianCoordinate();
 
         assertEquals(2.0, coordinate.getX(), 0.0);
         assertEquals(5.0, coordinate.getY(), 0.0);
@@ -29,7 +29,7 @@ public class LocationTest {
     public void testSave() throws SQLException {
         ResultSet rs = mock(ResultSet.class);
 
-        Coordinate coordinate = new Coordinate(2.3, 1.4, 4.2);
+        CartesianCoordinate coordinate = new CartesianCoordinate(2.3, 1.4, 4.2);
         Location location = new Location(coordinate);
 
         location.writeOn(rs);

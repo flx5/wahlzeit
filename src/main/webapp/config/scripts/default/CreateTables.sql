@@ -32,7 +32,10 @@ CREATE TABLE photos (
 	creation_time bigint,
 	location_x double precision,
 	location_y double precision,
-	location_z double precision
+	location_z double precision,
+	range integer,
+	livery text,
+	manufacturer text
 );
 
 CREATE TABLE tags (

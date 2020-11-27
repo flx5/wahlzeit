@@ -1,11 +1,13 @@
 package org.wahlzeit.model;
 
-import org.wahlzeit.services.SysLog;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class PlanePhotoFactory extends PhotoFactory {
+
+    public static synchronized PlanePhotoFactory getInstance() {
+        return (PlanePhotoFactory) PhotoFactory.getInstance();
+    }
 
     @Override
     public PlanePhoto createPhoto() {

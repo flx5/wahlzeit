@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Objects;
 
-public class CartesianCoordinate implements Coordinate {
+public class CartesianCoordinate extends AbstractCoordinate {
     private double x;
     private double y;
     private double z;
@@ -88,14 +88,6 @@ public class CartesianCoordinate implements Coordinate {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if(o instanceof Coordinate) {
-            return isEqual((Coordinate) o);
-        }
-        return false;
-    }
-
-    @Override
     public int hashCode() {
         return Objects.hash(x, y, z);
     }
@@ -106,22 +98,12 @@ public class CartesianCoordinate implements Coordinate {
     }
 
     @Override
-    public double getCartesianDistance(Coordinate other) {
-        return this.getDistance(other.asCartesianCoordinate());
-    }
-
-    @Override
     public SphericCoordinate asSphericCoordinate() {
         double radius = Math.sqrt(Math.pow(x,2) + Math.pow(y,2) + Math.pow(z,2));
         double phi = Math.atan2(y,x);
         double theta = Math.acos(z/radius);
 
         return new SphericCoordinate(phi, theta, radius);
-    }
-
-    @Override
-    public double getCentralAngle(Coordinate other) {
-        return this.asSphericCoordinate().getCentralAngle(other);
     }
 
     @Override

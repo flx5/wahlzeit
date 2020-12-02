@@ -4,7 +4,7 @@ import org.wahlzeit.utils.PrecisionUtil;
 
 import java.util.Objects;
 
-public class SphericCoordinate implements Coordinate {
+public class SphericCoordinate extends AbstractCoordinate {
     private double phi;
     private double theta;
     private double radius;
@@ -22,11 +22,6 @@ public class SphericCoordinate implements Coordinate {
         double z = radius * Math.cos(theta);
 
         return new CartesianCoordinate(x,y,z);
-    }
-
-    @Override
-    public double getCartesianDistance(Coordinate other) {
-        return this.asCartesianCoordinate().getDistance(other.asCartesianCoordinate());
     }
 
     @Override
@@ -83,14 +78,6 @@ public class SphericCoordinate implements Coordinate {
         return PrecisionUtil.equals(this.radius, otherSpheric.radius)
                 && PrecisionUtil.equals(this.phi, otherSpheric.phi)
                 && PrecisionUtil.equals(this.theta, otherSpheric.theta);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if(o instanceof Coordinate) {
-            return isEqual((Coordinate) o);
-        }
-        return false;
     }
 
     @Override

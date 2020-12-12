@@ -19,30 +19,46 @@ public class CartesianCoordinate extends AbstractCoordinate {
         this.x = x;
         this.y = y;
         this.z = z;
+
+        assertClassInvariants();
+    }
+
+    protected void assertClassInvariants() {
+        assertIsFinite(x, y, z);
     }
 
     public void readFrom(ResultSet rset) throws SQLException {
+        assertIsNotNullArgument(rset);
+
         x = rset.getDouble("location_x");
         y = rset.getDouble("location_y");
         z = rset.getDouble("location_z");
+
+        assertClassInvariants();
     }
 
     public void writeOn(ResultSet rset) throws SQLException {
+        assertIsNotNullArgument(rset);
+        assertClassInvariants();
+
         rset.updateDouble("location_x", x);
         rset.updateDouble("location_y", y);
         rset.updateDouble("location_z", z);
     }
 
     public double getDistance(CartesianCoordinate other) {
-        if(other == null) {
-            throw new IllegalArgumentException();
-        }
+        assertIsNotNullArgument(other);
+        assertClassInvariants();
 
-        return Math.sqrt(
-                  Math.pow(other.x - x, 2)
+        double distance = Math.sqrt(
+            Math.pow(other.x - x, 2)
                 + Math.pow(other.y - y, 2)
                 + Math.pow(other.z - z, 2)
         );
+
+        assertIsFinite(distance);
+
+        return distance;
     }
 
     @Override
@@ -58,6 +74,8 @@ public class CartesianCoordinate extends AbstractCoordinate {
 
         CartesianCoordinate otherCartesian = other.asCartesianCoordinate();
 
+        assert otherCartesian != null;
+
         return PrecisionUtil.equals(this.x, otherCartesian.x)
                 && PrecisionUtil.equals(this.y, otherCartesian.y)
                 && PrecisionUtil.equals(this.z, otherCartesian.z);
@@ -68,6 +86,7 @@ public class CartesianCoordinate extends AbstractCoordinate {
     }
 
     public void setX(double x) {
+        assertIsFinite(x);
         this.x = x;
     }
 
@@ -76,6 +95,7 @@ public class CartesianCoordinate extends AbstractCoordinate {
     }
 
     public void setY(double y) {
+        assertIsFinite(x);
         this.y = y;
     }
 
@@ -84,11 +104,13 @@ public class CartesianCoordinate extends AbstractCoordinate {
     }
 
     public void setZ(double z) {
+        assertIsFinite(x);
         this.z = z;
     }
 
     @Override
     public int hashCode() {
+        assertClassInvariants();
         return Objects.hash(x, y, z);
     }
 
@@ -103,7 +125,17 @@ public class CartesianCoordinate extends AbstractCoordinate {
         double phi = Math.atan2(y,x);
         double theta = Math.acos(z/radius);
 
-        return new SphericCoordinate(phi, theta, radius);
+        assertIsFinite(radius, phi, theta);
+
+        SphericCoordinate sphericCoordinate = new SphericCoordinate(phi, theta, radius);
+
+        // We can use absolute equality here since no calculations
+        // should have been done in the meantime on these values.
+        assert sphericCoordinate.getRadius() == radius;
+        assert sphericCoordinate.getPhi() == phi;
+        assert sphericCoordinate.getTheta() == theta;
+
+        return sphericCoordinate;
     }
 
     @Override

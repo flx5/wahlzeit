@@ -76,4 +76,16 @@ public class CoordinateTest {
         CartesianCoordinate result = coordinate.asCartesianCoordinate();
         assertEquals(expected, result);
     }
+
+    @Test
+    public void testNullEquals() {
+        CartesianCoordinate a = new CartesianCoordinate(13, 8, 7);
+        assertFalse(a.equals(null));
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testOverflow() {
+        CartesianCoordinate a = new CartesianCoordinate(Double.MAX_VALUE, 8, 7);
+         a.asSphericCoordinate();
+    }
 }

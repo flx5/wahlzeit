@@ -13,15 +13,25 @@ public class SphericCoordinate extends AbstractCoordinate {
         this.phi = phi;
         this.theta = theta;
         this.radius = radius;
+
+        assertClassInvariants();
     }
 
     @Override
     public CartesianCoordinate asCartesianCoordinate() {
+        assertClassInvariants();
+
         double x = radius * Math.sin(theta) * Math.cos(phi);
         double y = radius * Math.sin(theta) * Math.sin(phi);
         double z = radius * Math.cos(theta);
 
+        assertIsFinite(x, y, z);
+
         return new CartesianCoordinate(x,y,z);
+    }
+
+    protected void assertClassInvariants() {
+        assertIsFinite(phi, theta, radius);
     }
 
     @Override
@@ -31,12 +41,20 @@ public class SphericCoordinate extends AbstractCoordinate {
 
     @Override
     public double getCentralAngle(Coordinate other) {
+        assertIsNotNullArgument(other);
+
         SphericCoordinate otherSpheric = other.asSphericCoordinate();
+
+        assert otherSpheric != null;
 
         double deltaTheta = Math.abs(theta - otherSpheric.theta);
 
-        return Math.acos(Math.sin(phi)*Math.sin(otherSpheric.phi) +
-                Math.cos(theta)*Math.cos(otherSpheric.theta)*Math.cos(deltaTheta));
+        double angle = Math.acos(Math.sin(phi) * Math.sin(otherSpheric.phi) +
+            Math.cos(theta) * Math.cos(otherSpheric.theta) * Math.cos(deltaTheta));
+
+        assertIsFinite(angle);
+
+        return angle;
     }
 
     public double getPhi() {
@@ -44,6 +62,7 @@ public class SphericCoordinate extends AbstractCoordinate {
     }
 
     public void setPhi(double phi) {
+        assertIsFinite(phi);
         this.phi = phi;
     }
 
@@ -52,6 +71,7 @@ public class SphericCoordinate extends AbstractCoordinate {
     }
 
     public void setTheta(double theta) {
+        assertIsFinite(theta);
         this.theta = theta;
     }
 
@@ -60,6 +80,7 @@ public class SphericCoordinate extends AbstractCoordinate {
     }
 
     public void setRadius(double radius) {
+        assertIsFinite(radius);
         this.radius = radius;
     }
 
@@ -75,6 +96,8 @@ public class SphericCoordinate extends AbstractCoordinate {
 
         SphericCoordinate otherSpheric = other.asSphericCoordinate();
 
+        assert otherSpheric != null;
+
         return PrecisionUtil.equals(this.radius, otherSpheric.radius)
                 && PrecisionUtil.equals(this.phi, otherSpheric.phi)
                 && PrecisionUtil.equals(this.theta, otherSpheric.theta);
@@ -82,6 +105,7 @@ public class SphericCoordinate extends AbstractCoordinate {
 
     @Override
     public int hashCode() {
+        assertClassInvariants();
         return Objects.hash(phi, theta, radius);
     }
 

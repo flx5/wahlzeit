@@ -1,5 +1,6 @@
 package org.wahlzeit.model;
 
+import org.wahlzeit.model.exceptions.IllegalRangeException;
 import org.wahlzeit.utils.PrecisionUtil;
 
 import java.sql.ResultSet;
@@ -23,12 +24,15 @@ public class CartesianCoordinate extends AbstractCoordinate {
         assertClassInvariants();
     }
 
+    @Override
     protected void assertClassInvariants() {
-        assertIsFinite(x, y, z);
+        assertIsFinite(x, "x");
+        assertIsFinite(y, "y");
+        assertIsFinite(z, "z");
     }
 
     public void readFrom(ResultSet rset) throws SQLException {
-        assertIsNotNullArgument(rset);
+        assertIsNotNullArgument(rset, "rset");
 
         x = rset.getDouble("location_x");
         y = rset.getDouble("location_y");
@@ -38,7 +42,7 @@ public class CartesianCoordinate extends AbstractCoordinate {
     }
 
     public void writeOn(ResultSet rset) throws SQLException {
-        assertIsNotNullArgument(rset);
+        assertIsNotNullArgument(rset, "rset");
         assertClassInvariants();
 
         rset.updateDouble("location_x", x);
@@ -47,7 +51,7 @@ public class CartesianCoordinate extends AbstractCoordinate {
     }
 
     public double getDistance(CartesianCoordinate other) {
-        assertIsNotNullArgument(other);
+        assertIsNotNullArgument(other, "other");
         assertClassInvariants();
 
         double distance = Math.sqrt(
@@ -56,7 +60,7 @@ public class CartesianCoordinate extends AbstractCoordinate {
                 + Math.pow(other.z - z, 2)
         );
 
-        assertIsFinite(distance);
+        assertIsFinite(distance, "distance");
 
         return distance;
     }
@@ -74,7 +78,7 @@ public class CartesianCoordinate extends AbstractCoordinate {
 
         CartesianCoordinate otherCartesian = other.asCartesianCoordinate();
 
-        assert otherCartesian != null;
+        assertIsNotNullArgument(otherCartesian, "otherCartesian");
 
         return PrecisionUtil.equals(this.x, otherCartesian.x)
                 && PrecisionUtil.equals(this.y, otherCartesian.y)
@@ -86,7 +90,7 @@ public class CartesianCoordinate extends AbstractCoordinate {
     }
 
     public void setX(double x) {
-        assertIsFinite(x);
+        assertIsFinite(x, "x");
         this.x = x;
     }
 
@@ -95,7 +99,7 @@ public class CartesianCoordinate extends AbstractCoordinate {
     }
 
     public void setY(double y) {
-        assertIsFinite(x);
+        assertIsFinite(y, "y");
         this.y = y;
     }
 
@@ -104,7 +108,7 @@ public class CartesianCoordinate extends AbstractCoordinate {
     }
 
     public void setZ(double z) {
-        assertIsFinite(x);
+        assertIsFinite(z, "z");
         this.z = z;
     }
 
@@ -125,7 +129,9 @@ public class CartesianCoordinate extends AbstractCoordinate {
         double phi = Math.atan2(y,x);
         double theta = Math.acos(z/radius);
 
-        assertIsFinite(radius, phi, theta);
+        assertInRange(radius, "radius", 0, Double.POSITIVE_INFINITY, true, false);
+        assertInRange(theta, "theta", 0, Math.PI);
+        assertInRange(phi, "phi", -Math.PI, Math.PI);
 
         SphericCoordinate sphericCoordinate = new SphericCoordinate(phi, theta, radius);
 

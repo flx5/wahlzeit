@@ -1,5 +1,7 @@
 package org.wahlzeit.model;
 
+import org.wahlzeit.model.exceptions.IllegalRangeException;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -21,7 +23,12 @@ public class PlanePhotoFactory extends PhotoFactory {
 
     @Override
     public PlanePhoto createPhoto(ResultSet rs) throws SQLException {
-        return new PlanePhoto(rs);
+        try {
+            return new PlanePhoto(rs);
+        } catch(IllegalRangeException e) {
+            // Component boundary.
+            throw new SQLException("Error trying to read photo from database.", e);
+        }
     }
 
     /**

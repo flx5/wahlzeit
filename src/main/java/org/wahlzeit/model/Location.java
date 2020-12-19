@@ -1,5 +1,7 @@
 package org.wahlzeit.model;
 
+import org.wahlzeit.model.exceptions.IllegalRangeException;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -15,7 +17,12 @@ public class Location {
     }
 
     public void readFrom(ResultSet rset) throws SQLException {
-        this.coordinate = new CartesianCoordinate(rset);
+        try {
+            this.coordinate = new CartesianCoordinate(rset);
+        } catch(IllegalRangeException e) {
+            // Component boundary.
+            throw new SQLException("Error trying to read coordinate from database.", e);
+        }
     }
 
     public void writeOn(ResultSet rset) throws SQLException {

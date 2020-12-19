@@ -1,5 +1,7 @@
 package org.wahlzeit.model;
 
+import org.wahlzeit.model.exceptions.IllegalRangeException;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -20,6 +22,12 @@ public class PlanePhoto extends Photo {
         super(rset);
     }
 
+    protected void assertClassInvariants() {
+        if(rangeInKm < 0) {
+            throw new IllegalRangeException("rangeInKm", 0, Integer.MAX_VALUE, rangeInKm);
+        }
+    }
+
     @Override
     public void readFrom(ResultSet rset) throws SQLException {
         rangeInKm = rset.getInt("range");
@@ -27,6 +35,8 @@ public class PlanePhoto extends Photo {
         manufacturer = rset.getString("manufacturer");
 
         super.readFrom(rset);
+
+        this.assertClassInvariants();
     }
 
     @Override
@@ -44,6 +54,7 @@ public class PlanePhoto extends Photo {
 
     public void setRangeInKm(int rangeInKm) {
         this.rangeInKm = rangeInKm;
+        this.assertClassInvariants();
     }
 
     public String getLivery() {

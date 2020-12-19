@@ -25,13 +25,18 @@ public class SphericCoordinate extends AbstractCoordinate {
         double y = radius * Math.sin(theta) * Math.sin(phi);
         double z = radius * Math.cos(theta);
 
-        assertIsFinite(x, y, z);
+        assertIsFinite(x, "x");
+        assertIsFinite(y, "y");
+        assertIsFinite(z, "z");
 
         return new CartesianCoordinate(x,y,z);
     }
 
+    @Override
     protected void assertClassInvariants() {
-        assertIsFinite(phi, theta, radius);
+        assertInRange(radius, "radius", 0, Double.POSITIVE_INFINITY, true, false);
+        assertInRange(theta, "theta", 0, Math.PI);
+        assertInRange(phi, "phi", -Math.PI, Math.PI);
     }
 
     @Override
@@ -41,18 +46,18 @@ public class SphericCoordinate extends AbstractCoordinate {
 
     @Override
     public double getCentralAngle(Coordinate other) {
-        assertIsNotNullArgument(other);
+        assertIsNotNullArgument(other, "other");
 
         SphericCoordinate otherSpheric = other.asSphericCoordinate();
 
-        assert otherSpheric != null;
+        assertIsNotNullArgument(otherSpheric, "otherSpheric");
 
         double deltaTheta = Math.abs(theta - otherSpheric.theta);
 
         double angle = Math.acos(Math.sin(phi) * Math.sin(otherSpheric.phi) +
             Math.cos(theta) * Math.cos(otherSpheric.theta) * Math.cos(deltaTheta));
 
-        assertIsFinite(angle);
+        assertInRange(angle, "angle", 0, Math.PI);
 
         return angle;
     }
@@ -62,7 +67,7 @@ public class SphericCoordinate extends AbstractCoordinate {
     }
 
     public void setPhi(double phi) {
-        assertIsFinite(phi);
+        assertInRange(phi, "phi", -Math.PI, Math.PI);
         this.phi = phi;
     }
 
@@ -71,7 +76,7 @@ public class SphericCoordinate extends AbstractCoordinate {
     }
 
     public void setTheta(double theta) {
-        assertIsFinite(theta);
+        assertInRange(theta, "theta", 0, Math.PI);
         this.theta = theta;
     }
 
@@ -80,7 +85,7 @@ public class SphericCoordinate extends AbstractCoordinate {
     }
 
     public void setRadius(double radius) {
-        assertIsFinite(radius);
+        assertInRange(radius, "radius", 0, Double.POSITIVE_INFINITY, true, false);
         this.radius = radius;
     }
 

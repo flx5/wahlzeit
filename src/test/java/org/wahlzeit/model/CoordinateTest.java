@@ -1,6 +1,7 @@
 package org.wahlzeit.model;
 
 import org.junit.Test;
+import org.wahlzeit.model.exceptions.IllegalRangeException;
 import org.wahlzeit.utils.PrecisionUtil;
 
 import static org.junit.Assert.*;
@@ -56,7 +57,7 @@ public class CoordinateTest {
         CartesianCoordinate x = new CartesianCoordinate(13, 8, 7);
         CartesianCoordinate y = new CartesianCoordinate(7, 6, 10);
 
-        assertEquals(7.0, x.getDistance(y), PrecisionUtil.EPSILON);
+        assertEquals(7.0, x.getCartesianDistance(y), PrecisionUtil.EPSILON);
     }
 
     @Test
@@ -83,9 +84,14 @@ public class CoordinateTest {
         assertFalse(a.equals(null));
     }
 
-    @Test(expected = AssertionError.class)
+    @Test(expected = IllegalRangeException.class)
     public void testOverflow() {
         CartesianCoordinate a = new CartesianCoordinate(Double.MAX_VALUE, 8, 7);
-         a.asSphericCoordinate();
+        a.asSphericCoordinate();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNull() throws SQLException {
+        CartesianCoordinate a = new CartesianCoordinate(null);
     }
 }

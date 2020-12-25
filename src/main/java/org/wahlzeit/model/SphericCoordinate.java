@@ -5,11 +5,13 @@ import org.wahlzeit.utils.PrecisionUtil;
 import java.util.Objects;
 
 public class SphericCoordinate extends AbstractCoordinate {
-    private double phi;
-    private double theta;
-    private double radius;
+    private static final ValueObjectManager<SphericCoordinate> manager = new ValueObjectManager<>();
 
-    public SphericCoordinate(double phi, double theta, double radius) {
+    private final double phi;
+    private final double theta;
+    private final double radius;
+
+    private SphericCoordinate(double phi, double theta, double radius) {
         this.phi = phi;
         this.theta = theta;
         this.radius = radius;
@@ -29,7 +31,11 @@ public class SphericCoordinate extends AbstractCoordinate {
         assertIsFinite(y, "y");
         assertIsFinite(z, "z");
 
-        return new CartesianCoordinate(x,y,z);
+        return CartesianCoordinate.getInstance(x,y,z);
+    }
+
+    public static SphericCoordinate getInstance(double phi, double theta, double radius) {
+        return manager.getSharedValueObject(new SphericCoordinate(phi, theta, radius));
     }
 
     @Override
@@ -66,27 +72,27 @@ public class SphericCoordinate extends AbstractCoordinate {
         return phi;
     }
 
-    public void setPhi(double phi) {
+    public SphericCoordinate setPhi(double phi) {
         assertInRange(phi, "phi", -Math.PI, Math.PI);
-        this.phi = phi;
+        return getInstance(phi, theta, radius);
     }
 
     public double getTheta() {
         return theta;
     }
 
-    public void setTheta(double theta) {
+    public SphericCoordinate setTheta(double theta) {
         assertInRange(theta, "theta", 0, Math.PI);
-        this.theta = theta;
+        return getInstance(phi, theta, radius);
     }
 
     public double getRadius() {
         return radius;
     }
 
-    public void setRadius(double radius) {
+    public SphericCoordinate setRadius(double radius) {
         assertInRange(radius, "radius", 0, Double.POSITIVE_INFINITY, true, false);
-        this.radius = radius;
+        return getInstance(phi, theta, radius);
     }
 
     @Override
@@ -111,7 +117,7 @@ public class SphericCoordinate extends AbstractCoordinate {
     @Override
     public int hashCode() {
         assertClassInvariants();
-        return Objects.hash(phi, theta, radius);
+        return Objects.hash(Math.round(phi), Math.round(theta), Math.round(radius));
     }
 
     @Override

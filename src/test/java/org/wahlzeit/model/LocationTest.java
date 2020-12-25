@@ -29,7 +29,7 @@ public class LocationTest {
     public void testSave() throws SQLException {
         ResultSet rs = mock(ResultSet.class);
 
-        CartesianCoordinate coordinate = new CartesianCoordinate(2.3, 1.4, 4.2);
+        CartesianCoordinate coordinate = CartesianCoordinate.getInstance(2.3, 1.4, 4.2);
         Location location = new Location(coordinate);
 
         location.writeOn(rs);

@@ -1,22 +1,19 @@
 package org.wahlzeit.model;
 
-import org.wahlzeit.model.exceptions.IllegalRangeException;
 import org.wahlzeit.utils.PrecisionUtil;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Objects;
+import java.util.*;
 
 public class CartesianCoordinate extends AbstractCoordinate {
-    private double x;
-    private double y;
-    private double z;
+    private static final ValueObjectManager<CartesianCoordinate> manager = new ValueObjectManager<>();
 
-    public CartesianCoordinate(ResultSet rset) throws SQLException {
-        readFrom(rset);
-    }
+    private final double x;
+    private final double y;
+    private final double z;
 
-    public CartesianCoordinate(double x, double y, double z) {
+    private CartesianCoordinate(double x, double y, double z) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -24,21 +21,27 @@ public class CartesianCoordinate extends AbstractCoordinate {
         assertClassInvariants();
     }
 
+    private CartesianCoordinate(ResultSet rset) throws SQLException {
+        assertIsNotNullArgument(rset, "rset");
+        x = rset.getDouble("location_x");
+        y = rset.getDouble("location_y");
+        z = rset.getDouble("location_z");
+        assertClassInvariants();
+    }
+
+    public static CartesianCoordinate getInstance(double x, double y, double z) {
+        return manager.getSharedValueObject(new CartesianCoordinate(x, y, z));
+    }
+
+    public static CartesianCoordinate getInstance(ResultSet rset) throws SQLException {
+        return manager.getSharedValueObject(new CartesianCoordinate(rset));
+    }
+
     @Override
     protected void assertClassInvariants() {
         assertIsFinite(x, "x");
         assertIsFinite(y, "y");
         assertIsFinite(z, "z");
-    }
-
-    public void readFrom(ResultSet rset) throws SQLException {
-        assertIsNotNullArgument(rset, "rset");
-
-        x = rset.getDouble("location_x");
-        y = rset.getDouble("location_y");
-        z = rset.getDouble("location_z");
-
-        assertClassInvariants();
     }
 
     public void writeOn(ResultSet rset) throws SQLException {
@@ -89,33 +92,40 @@ public class CartesianCoordinate extends AbstractCoordinate {
         return x;
     }
 
-    public void setX(double x) {
+    public CartesianCoordinate setX(double x) {
         assertIsFinite(x, "x");
-        this.x = x;
+        return getInstance(x, y, z);
     }
 
     public double getY() {
         return y;
     }
 
-    public void setY(double y) {
+    public CartesianCoordinate setY(double y) {
         assertIsFinite(y, "y");
-        this.y = y;
+
+        return getInstance(x, y, z);
     }
 
     public double getZ() {
         return z;
     }
 
-    public void setZ(double z) {
+    public CartesianCoordinate setZ(double z) {
         assertIsFinite(z, "z");
-        this.z = z;
+        return getInstance(x, y, z);
     }
 
     @Override
     public int hashCode() {
+        /*
+        This method as well as the equals (transitive!) method basically violate the contracts of Java Objects...
+        But since the JDK does not provide us with a way to supply a custom comparator to HashMap
+        for shared value objects and the lecture required us to forward the equals method to isEquals...
+        *shrugs*
+         */
         assertClassInvariants();
-        return Objects.hash(x, y, z);
+        return Objects.hash(Math.round(x), Math.round(y), Math.round(z));
     }
 
     @Override
@@ -133,13 +143,13 @@ public class CartesianCoordinate extends AbstractCoordinate {
         assertInRange(theta, "theta", 0, Math.PI);
         assertInRange(phi, "phi", -Math.PI, Math.PI);
 
-        SphericCoordinate sphericCoordinate = new SphericCoordinate(phi, theta, radius);
+        SphericCoordinate sphericCoordinate = SphericCoordinate.getInstance(phi, theta, radius);
 
-        // We can use absolute equality here since no calculations
-        // should have been done in the meantime on these values.
-        assert sphericCoordinate.getRadius() == radius;
-        assert sphericCoordinate.getPhi() == phi;
-        assert sphericCoordinate.getTheta() == theta;
+        // We need to use precision util here because the returned instance might be a little bit different.
+
+        assert PrecisionUtil.equals(radius, sphericCoordinate.getRadius())
+            && PrecisionUtil.equals(phi, sphericCoordinate.getPhi())
+            && PrecisionUtil.equals(theta, sphericCoordinate.getTheta());
 
         return sphericCoordinate;
     }

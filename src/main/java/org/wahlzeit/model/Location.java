@@ -18,7 +18,7 @@ public class Location {
 
     public void readFrom(ResultSet rset) throws SQLException {
         try {
-            this.coordinate = new CartesianCoordinate(rset);
+            this.coordinate = CartesianCoordinate.getInstance(rset);
         } catch(IllegalRangeException e) {
             // Component boundary.
             throw new SQLException("Error trying to read coordinate from database.", e);

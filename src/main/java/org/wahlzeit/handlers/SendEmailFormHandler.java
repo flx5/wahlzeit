@@ -29,6 +29,16 @@ import org.wahlzeit.webparts.WebPart;
 /**
  * A handler class for a specific web form.
  */
+@PatternInstance(
+		patternName = "Command",
+		participants = {
+				"SendEmailFormHandler",
+				"AbstractWebFormHandler",
+				"WebFormHandler",
+				"AbstractWebPartHandler",
+				"WebPartHandler"
+		}
+)
 public class SendEmailFormHandler extends AbstractWebFormHandler {
 	
 	/**

@@ -27,6 +27,13 @@ import org.wahlzeit.services.*;
 /**
  * An Abstract Factory for creating photos and related objects.
  */
+@PatternInstance(
+		patternName = "Factory",
+		participants = {
+				"PhotoFactory", "Photo"
+		}
+)
+
 public class PhotoFactory {
 	
 	/**
@@ -37,6 +44,12 @@ public class PhotoFactory {
 	/**
 	 * Public singleton access method.
 	 */
+	@PatternInstance(
+			patternName = "Singleton",
+			participants = {
+					"PhotoFactory"
+			}
+	)
 	public static synchronized PhotoFactory getInstance() {
 		if (instance == null) {
 			SysLog.logSysInfo("setting generic PhotoFactory");

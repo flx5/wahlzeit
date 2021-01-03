@@ -20,6 +20,8 @@
 
 package org.wahlzeit.services;
 
+import org.wahlzeit.model.PatternInstance;
+
 import java.sql.*;
 import java.util.*;
 
@@ -30,6 +32,12 @@ import java.util.*;
  * @author dirkriehle
  *
  */
+@PatternInstance(
+		patternName = "Object Pool",
+		participants = {
+				"DatabaseConnection"
+		}
+)
 public class DatabaseConnection {
 	
 	/**

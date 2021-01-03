@@ -6,6 +6,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
+@PatternInstance(
+    patternName = "Flyweight Pattern",
+    participants = {
+        "CartesianCoordinate", "ValueObjectManager<CartesianCoordinate>"
+    }
+)
 public class CartesianCoordinate extends AbstractCoordinate {
     private static final ValueObjectManager<CartesianCoordinate> manager = new ValueObjectManager<>();
 

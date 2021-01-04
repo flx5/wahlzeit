@@ -47,6 +47,7 @@ public class PlanePhotoFactoryTest {
         when(rs.getInt("praise_sum")).thenReturn(3);
         when(rs.getInt("no_votes")).thenReturn(2);
         when(rs.getLong("creation_time")).thenReturn(0l);
+        when(rs.getString("type_name")).thenReturn("Airbus A380-700");
 
         Photo photo = factory.createPhoto(rs);
         assertThat(photo, instanceOf(PlanePhoto.class));

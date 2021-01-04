@@ -1,16 +1,16 @@
 package org.wahlzeit.model;
 
-import org.wahlzeit.model.exceptions.IllegalRangeException;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class PlanePhoto extends Photo {
-    private int rangeInKm;
-    private String livery;
-    private String manufacturer;
+
+    private Plane plane;
 
     public PlanePhoto() {
+        /* FIXME The user should be able to provide a type in the frontend so that
+            we can actually create the plane in the ctor
+         */
         super();
     }
 
@@ -23,16 +23,31 @@ public class PlanePhoto extends Photo {
     }
 
     protected void assertClassInvariants() {
-        if(rangeInKm < 0) {
-            throw new IllegalRangeException("rangeInKm", 0, Integer.MAX_VALUE, rangeInKm);
+        if(plane == null) {
+            throw new IllegalStateException("plane");
         }
+    }
+
+    public Plane getPlane() {
+        return plane;
+    }
+
+    public void setPlane(Plane plane) {
+        this.plane = plane;
     }
 
     @Override
     public void readFrom(ResultSet rset) throws SQLException {
-        rangeInKm = rset.getInt("range");
-        livery = rset.getString("livery");
-        manufacturer = rset.getString("manufacturer");
+        int rangeInKm = rset.getInt("range");
+        String livery = rset.getString("livery");
+        String manufacturer = rset.getString("manufacturer");
+        String typeName = rset.getString("type_name");
+
+        // TODO In reality the plane type would require a separate database table
+
+        this.plane = PlaneManager.getInstance().createPlane(typeName);
+
+        this.plane.setLivery(livery);
 
         super.readFrom(rset);
 
@@ -41,35 +56,14 @@ public class PlanePhoto extends Photo {
 
     @Override
     public void writeOn(ResultSet rset) throws SQLException {
-        rset.updateInt("range", rangeInKm);
-        rset.updateString("livery", livery);
-        rset.updateString("manufacturer", manufacturer);
+        assertClassInvariants();
+
+        if(this.plane != null) {
+            rset.updateInt("range", this.plane.getPlaneType().getRangeInKm());
+            rset.updateString("livery", this.plane.getLivery());
+            rset.updateString("manufacturer", this.plane.getPlaneType().getManufacturer());
+        }
 
         super.writeOn(rset);
-    }
-
-    public int getRangeInKm() {
-        return rangeInKm;
-    }
-
-    public void setRangeInKm(int rangeInKm) {
-        this.rangeInKm = rangeInKm;
-        this.assertClassInvariants();
-    }
-
-    public String getLivery() {
-        return livery;
-    }
-
-    public void setLivery(String livery) {
-        this.livery = livery;
-    }
-
-    public String getManufacturer() {
-        return manufacturer;
-    }
-
-    public void setManufacturer(String manufacturer) {
-        this.manufacturer = manufacturer;
     }
 }

@@ -35,6 +35,7 @@ CREATE TABLE photos (
 	location_z double precision,
 	range integer,
 	livery text,
+	type_name text,
 	manufacturer text
 );
 
